@@ -2,7 +2,7 @@
 import React from "react";
 import { jsx } from 'theme-ui';
 import WithDividers from './support/WithDividers';
-import { ReactNodeLike } from '../../types';
+import { ReactNodeLike } from '../../../types';
 
 export type TabProps = { active: boolean } & React.DetailedHTMLProps<
   React.ButtonHTMLAttributes<HTMLButtonElement>,

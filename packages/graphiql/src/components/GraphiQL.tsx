@@ -39,8 +39,8 @@ import {
 } from '../api/providers/GraphiQLSessionProvider';
 import { getFetcher } from '../api/common';
 import {Unsubscribable, Fetcher, ReactNodeLike} from '../types';
-import { Provider, useThemeLayout } from '../new-components/themes/provider';
-import Tabs from "../new-components/Toolbar/Tabs";
+import { Provider, useThemeLayout } from './common/themes/provider';
+import Tabs from "./common/Toolbar/Tabs";
 
 const DEFAULT_DOC_EXPLORER_WIDTH = 350;
 
