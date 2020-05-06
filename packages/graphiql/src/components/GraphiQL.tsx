@@ -40,7 +40,7 @@ import {
 import { getFetcher } from '../api/common';
 import {Unsubscribable, Fetcher, ReactNodeLike} from '../types';
 import { Provider, useThemeLayout } from '../new-components/themes/provider';
-import Tabs, { Panel } from "../new-components/Toolbar/Tabs";
+import Tabs from "../new-components/Toolbar/Tabs";
 
 const DEFAULT_DOC_EXPLORER_WIDTH = 350;
 
