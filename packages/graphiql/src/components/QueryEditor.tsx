@@ -106,9 +106,7 @@ export function QueryEditor(props: QueryEditorProps) {
     }
   }, [props.editorOptions]);
 
-  return (
-    <section aria-label="Query Editor" ref={divRef} />
-  );
+  return <section aria-label="Query Editor" ref={divRef} />;
 }
 
 // /**

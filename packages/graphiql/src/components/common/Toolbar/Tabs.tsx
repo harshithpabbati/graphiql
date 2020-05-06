@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import React from "react";
+import React from 'react';
 import { jsx } from 'theme-ui';
 import WithDividers from './support/WithDividers';
 import { ReactNodeLike } from '../../../types';
@@ -33,24 +33,24 @@ export type TabsProps = {
   tabs: ReactNodeLike[];
   active: number;
   onChange?: (idx: number) => void;
-  children: ReactNodeLike[]
+  children: ReactNodeLike[];
 };
 
 const Tabs = ({ tabs, active, onChange, children }: TabsProps) => {
   return (
-      <React.Fragment>
-        <WithDividers>
-          {tabs.map((tab, index) => (
-            <Tab
-              key={index}
-              active={active === index}
-              onClick={() => onChange?.(index)}>
-              {tab}
-            </Tab>
-          ))}
-        </WithDividers>
-        {children[active]}
-      </React.Fragment>
+    <React.Fragment>
+      <WithDividers>
+        {tabs.map((tab, index) => (
+          <Tab
+            key={index}
+            active={active === index}
+            onClick={() => onChange?.(index)}>
+            {tab}
+          </Tab>
+        ))}
+      </WithDividers>
+      {children[active]}
+    </React.Fragment>
   );
 };
 
