@@ -88,7 +88,7 @@ const Layout = ({ nav, navPanels, explorer }: LayoutPropTypes) => {
             ...gridBase,
             gridArea: 'explorer',
             gridAutoRows: '1fr',
-            gridTemplateAreas: `'input response' 'console response'`,
+            gridTemplateAreas: `'input response' 'console console'`,
           }}>
           <Card innerSx={{ gridArea: 'input' }}>{explorer.input}</Card>
           <Card innerSx={{ gridArea: 'response' }}>{explorer.response}</Card>

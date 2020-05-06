@@ -8,7 +8,7 @@
 import React, {
   ComponentType,
   PropsWithChildren,
-  MouseEventHandler,
+  MouseEventHandler, useState,
 } from 'react';
 import { GraphQLSchema, OperationDefinitionNode, GraphQLType } from 'graphql';
 
@@ -38,8 +38,9 @@ import {
   SessionContext,
 } from '../api/providers/GraphiQLSessionProvider';
 import { getFetcher } from '../api/common';
-import { Unsubscribable, Fetcher } from '../types';
+import {Unsubscribable, Fetcher, ReactNodeLike} from '../types';
 import { Provider, useThemeLayout } from '../new-components/themes/provider';
+import Tabs, { Panel } from "../new-components/Toolbar/Tabs";
 
 const DEFAULT_DOC_EXPLORER_WIDTH = 350;
 
@@ -295,6 +296,11 @@ class GraphiQLInternals extends React.Component<
     //   height: variableOpen ? this.state.variableEditorHeight : undefined,
     // };
 
+    const EditorTabs = ({ tabs, children }: { tabs: Array<ReactNodeLike>; children: Array<ReactNodeLike> }) => {
+      const [active, setActive] = useState(0);
+      return <Tabs active={active} tabs={tabs} onChange={setActive}>{children}</Tabs>;
+    };
+
     const operationEditor = (
       // <div
       //   ref={n => {
@@ -304,56 +310,57 @@ class GraphiQLInternals extends React.Component<
       //   onDoubleClick={this.handleResetResize}
       //   onMouseDown={this.handleResizeStart}>
       //   <div className="queryWrap" style={queryWrapStyle}>
-      <QueryEditor
-        onHintInformationRender={this.handleHintInformationRender}
-        onClickReference={this.handleClickReference}
-        editorTheme={this.props.editorTheme}
-        readOnly={this.props.readOnly}
-        editorOptions={this.props.operationEditorOptions}
-      />
+      <section>
+        <EditorTabs tabs={[ `Query`, `Explorer` ]}>
+          <QueryEditor
+              onHintInformationRender={this.handleHintInformationRender}
+              onClickReference={this.handleClickReference}
+              editorTheme={this.props.editorTheme}
+              readOnly={this.props.readOnly}
+              editorOptions={this.props.operationEditorOptions}
+          />
+          <div>Explorer</div>
+        </EditorTabs>
+      </section>
       //   </div>
       // </div>
     );
 
     const variables = (
-      <section
-        className="variable-editor"
-        // style={variableStyle}
-        aria-label="Query Variables">
-        <div
-          className="variable-editor-title"
-          id="variable-editor-title"
-          // style={{
-          //   cursor: variableOpen ? 'row-resize' : 'n-resize',
-          // }}
-          // onMouseDown={this.handleVariableResizeStart}
-        >
-          {'Query Variables'}
-        </div>
-        <VariableEditor
-          onHintInformationRender={this.handleHintInformationRender}
-          onPrettifyQuery={this.handlePrettifyQuery}
-          onMergeQuery={this.handleMergeQuery}
-          editorTheme={this.props.editorTheme}
-          readOnly={this.props.readOnly}
-          editorOptions={this.props.variablesEditorOptions}
-        />
+      <section aria-label="Query Variables">
+        <EditorTabs tabs={[ `Variables`, `Console` ]}>
+          <VariableEditor
+              onHintInformationRender={this.handleHintInformationRender}
+              onPrettifyQuery={this.handlePrettifyQuery}
+              onMergeQuery={this.handleMergeQuery}
+              editorTheme={this.props.editorTheme}
+              readOnly={this.props.readOnly}
+              editorOptions={this.props.variablesEditorOptions}
+          />
+          <div>Console</div>
+        </EditorTabs>
       </section>
     );
 
     const response = (
-      <div className="resultWrap">
-        {this.state.isWaitingForResponse && (
-          <div className="spinner-container">
-            <div className="spinner" />
-          </div>
-        )}
-        <ResultViewer
-          editorTheme={this.props.editorTheme}
-          editorOptions={this.props.resultsEditorOptions}
-        />
-        {footer}
-      </div>
+        <section aria-label="Response Editor">
+          <EditorTabs tabs={[ `Response`, `Extensions`, `Playground` ]}>
+            <>
+              {this.state.isWaitingForResponse && (
+                  <div className="spinner-container">
+                    <div className="spinner" />
+                  </div>
+              )}
+              <ResultViewer
+                  editorTheme={this.props.editorTheme}
+                  editorOptions={this.props.resultsEditorOptions}
+              />
+              {footer}
+            </>
+            <div>Extensions</div>
+            <div>Playground</div>
+          </EditorTabs>
+        </section>
     );
 
     return (

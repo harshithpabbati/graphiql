@@ -107,7 +107,7 @@ export function QueryEditor(props: QueryEditorProps) {
   }, [props.editorOptions]);
 
   return (
-    <section className="query-editor" aria-label="Query Editor" ref={divRef} />
+    <section aria-label="Query Editor" ref={divRef} />
   );
 }
 
