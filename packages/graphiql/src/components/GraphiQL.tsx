@@ -296,7 +296,8 @@ class GraphiQLInternals extends React.Component<
     //   height: variableOpen ? this.state.variableEditorHeight : undefined,
     // };
 
-    const EditorTabs = ({ tabs, children }: { tabs: Array<ReactNodeLike>; children: Array<ReactNodeLike> }) => {
+    // eslint-disable-next-line no-shadow
+    const SessionTabs = ({ tabs, children }: { tabs: Array<ReactNodeLike>; children: Array<ReactNodeLike> }) => {
       const [active, setActive] = useState(0);
       return <Tabs active={active} tabs={tabs} onChange={setActive}>{children}</Tabs>;
     };
@@ -311,7 +312,7 @@ class GraphiQLInternals extends React.Component<
       //   onMouseDown={this.handleResizeStart}>
       //   <div className="queryWrap" style={queryWrapStyle}>
       <section>
-        <EditorTabs tabs={[ `Query`, `Explorer` ]}>
+        <SessionTabs tabs={[ `Operation`, `Explorer` ]}>
           <QueryEditor
               onHintInformationRender={this.handleHintInformationRender}
               onClickReference={this.handleClickReference}
@@ -319,8 +320,8 @@ class GraphiQLInternals extends React.Component<
               readOnly={this.props.readOnly}
               editorOptions={this.props.operationEditorOptions}
           />
-          <div>Explorer</div>
-        </EditorTabs>
+          <div>{`Explorer`}</div>
+        </SessionTabs>
       </section>
       //   </div>
       // </div>
@@ -328,7 +329,7 @@ class GraphiQLInternals extends React.Component<
 
     const variables = (
       <section aria-label="Query Variables">
-        <EditorTabs tabs={[ `Variables`, `Console` ]}>
+        <SessionTabs tabs={[ `Variables`, `Console` ]}>
           <VariableEditor
               onHintInformationRender={this.handleHintInformationRender}
               onPrettifyQuery={this.handlePrettifyQuery}
@@ -337,14 +338,14 @@ class GraphiQLInternals extends React.Component<
               readOnly={this.props.readOnly}
               editorOptions={this.props.variablesEditorOptions}
           />
-          <div>Console</div>
-        </EditorTabs>
+          <div>{`Console`}</div>
+        </SessionTabs>
       </section>
     );
 
     const response = (
         <section aria-label="Response Editor">
-          <EditorTabs tabs={[ `Response`, `Extensions`, `Playground` ]}>
+          <SessionTabs tabs={[ `Response`, `Extensions`, `Playground` ]}>
             <>
               {this.state.isWaitingForResponse && (
                   <div className="spinner-container">
@@ -357,9 +358,9 @@ class GraphiQLInternals extends React.Component<
               />
               {footer}
             </>
-            <div>Extensions</div>
-            <div>Playground</div>
-          </EditorTabs>
+            <div>{`Extensions`}</div>
+            <div>{`Playground`}</div>
+          </SessionTabs>
         </section>
     );
 
