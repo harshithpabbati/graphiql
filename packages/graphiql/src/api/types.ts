@@ -30,3 +30,5 @@ export type SessionState = {
   subscription?: Unsubscribable | null;
   operationName?: string; // current operation name
 };
+
+export type BrowserState = {};
