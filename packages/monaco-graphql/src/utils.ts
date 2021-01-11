@@ -6,17 +6,20 @@
  */
 
 import type {
-  Range as GraphQLRange,
-  Position as GraphQLPosition,
+  IRange as GraphQLRange,
+  IPosition as GraphQLPosition,
   Diagnostic,
   CompletionItem as GraphQLCompletionItem,
-} from 'graphql-language-service-types';
+} from 'graphql-language-service';
 
+import { Position } from 'graphql-language-service';
+
+// @ts-ignore
 export type MonacoCompletionItem = monaco.languages.CompletionItem & {
   isDeprecated?: boolean;
   deprecationReason?: string | null;
 };
-
+// @ts-ignore
 export function toMonacoRange(range: GraphQLRange): monaco.IRange {
   return {
     startLineNumber: range.start.line + 1,
@@ -26,22 +29,29 @@ export function toMonacoRange(range: GraphQLRange): monaco.IRange {
   };
 }
 
+// @ts-ignore
 export function toGraphQLPosition(position: monaco.Position): GraphQLPosition {
-  return { line: position.lineNumber - 1, character: position.column - 1 };
+  return new Position(position.lineNumber - 1, position.column - 1);
 }
 
 export function toCompletion(
   entry: GraphQLCompletionItem,
-  range: GraphQLRange,
+  range?: GraphQLRange,
+  // @ts-ignore
 ): GraphQLCompletionItem & { range: monaco.IRange } {
   return {
     label: entry.label,
-    insertText: entry.insertText || (entry.label as string),
+    // TODO: when adding variables to getAutocompleteSuggestions, we appended the $.
+    // this appears to cause an issue in monaco, but not vscode
+    insertText:
+      entry.insertText ||
+      (!entry.label.startsWith('$') ? entry.label : entry.label.substring(1)),
     sortText: entry.sortText,
     filterText: entry.filterText,
     documentation: entry.documentation,
     detail: entry.detail,
-    range: toMonacoRange(range),
+    // @ts-ignore
+    range: range ? toMonacoRange(range) : undefined,
     kind: entry.kind,
   };
 }
@@ -74,6 +84,7 @@ export function toCompletion(
 
 export function toMarkerData(
   diagnostic: Diagnostic,
+  // @ts-ignore
 ): monaco.editor.IMarkerData {
   return {
     startLineNumber: diagnostic.range.start.line + 1,

@@ -1,5 +1,5 @@
 /**
- *  Copyright (c) 2019 GraphQL Contributors
+ *  Copyright (c) 2020 GraphQL Contributors
  *  All rights reserved.
  *
  *  This source code is licensed under the BSD-style license found in the
@@ -33,7 +33,12 @@ const TYPE = {
  */
 CodeMirror.registerHelper('lint', 'graphql', (text, options) => {
   const schema = options.schema;
-  const rawResults = getDiagnostics(text, schema);
+  const rawResults = getDiagnostics(
+    text,
+    schema,
+    options.validationRules,
+    options.externalFragments,
+  );
 
   const results = rawResults.map(error => ({
     message: error.message,

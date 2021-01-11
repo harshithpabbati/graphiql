@@ -1,5 +1,5 @@
 /**
- *  Copyright (c) 2019 GraphQL Contributors
+ *  Copyright (c) 2020 GraphQL Contributors
  *  All rights reserved.
  *
  *  This source code is licensed under the license found in the
@@ -9,7 +9,7 @@
 
 import { ASTNode } from 'graphql/language';
 
-import { Position as TPosition } from 'graphql-language-service-types';
+import { IPosition as TPosition } from 'graphql-language-service-types';
 import { visit } from 'graphql';
 
 export function getASTNodeAtPosition(

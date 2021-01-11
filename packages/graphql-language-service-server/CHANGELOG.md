@@ -3,6 +3,111 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.2](https://github.com/graphql/graphiql/compare/graphql-language-service-server@2.6.1...graphql-language-service-server@2.6.2) (2021-01-07)
+
+**Note:** Version bump only for package graphql-language-service-server
+
+## [2.6.1](https://github.com/graphql/graphiql/compare/graphql-language-service-server@2.6.0...graphql-language-service-server@2.6.1) (2021-01-07)
+
+**Note:** Version bump only for package graphql-language-service-server
+
+# [2.6.0](https://github.com/graphql/graphiql/compare/graphql-language-service-server@2.5.9...graphql-language-service-server@2.6.0) (2021-01-07)
+
+### Features
+
+- implied or external fragments, for [#612](https://github.com/graphql/graphiql/issues/612) ([#1750](https://github.com/graphql/graphiql/issues/1750)) ([cfed265](https://github.com/graphql/graphiql/commit/cfed265e3cf31875b39ea517781a217fcdfcadc2))
+
+## [2.5.9](https://github.com/graphql/graphiql/compare/graphql-language-service-server@2.5.8...graphql-language-service-server@2.5.9) (2021-01-03)
+
+**Note:** Version bump only for package graphql-language-service-server
+
+## [2.5.8](https://github.com/graphql/graphiql/compare/graphql-language-service-server@2.5.7...graphql-language-service-server@2.5.8) (2020-12-28)
+
+**Note:** Version bump only for package graphql-language-service-server
+
+## [2.5.7](https://github.com/graphql/graphiql/compare/graphql-language-service-server@2.5.6...graphql-language-service-server@2.5.7) (2020-12-08)
+
+**Note:** Version bump only for package graphql-language-service-server
+
+## [2.5.6](https://github.com/graphql/graphiql/compare/graphql-language-service-server@2.5.5...graphql-language-service-server@2.5.6) (2020-11-28)
+
+### Bug Fixes
+
+- crash on receiving an LSP message in "stream" mode ([1238075](https://github.com/graphql/graphiql/commit/1238075c5bbd18b09f493c0018da5e4b24e8e615)), closes [#1708](https://github.com/graphql/graphiql/issues/1708)
+- languageserver filepath on Windows ([#1715](https://github.com/graphql/graphiql/issues/1715)) ([d2feff9](https://github.com/graphql/graphiql/commit/d2feff92aba979fb52fd0e5846776be223fbf11e))
+
+## [2.5.5](https://github.com/graphql/graphiql/compare/graphql-language-service-server@2.5.4...graphql-language-service-server@2.5.5) (2020-10-20)
+
+**Note:** Version bump only for package graphql-language-service-server
+
+## [2.5.4](https://github.com/graphql/graphiql/compare/graphql-language-service-server@2.5.3...graphql-language-service-server@2.5.4) (2020-09-23)
+
+### Bug Fixes
+
+- useSchemaFileDefinitions, cleanup ([#1674](https://github.com/graphql/graphiql/issues/1674)) ([3673455](https://github.com/graphql/graphiql/commit/36734557e2874384adbfe86b64aeaa93e06df53f))
+
+## [2.5.3](https://github.com/graphql/graphiql/compare/graphql-language-service-server@2.5.2...graphql-language-service-server@2.5.3) (2020-09-23)
+
+**Note:** Version bump only for package graphql-language-service-server
+
+## [2.5.2](https://github.com/graphql/graphiql/compare/graphql-language-service-server@2.5.1...graphql-language-service-server@2.5.2) (2020-09-20)
+
+### Bug Fixes
+
+- re-introduce allowed extensions ([#1668](https://github.com/graphql/graphiql/issues/1668)) ([eedd575](https://github.com/graphql/graphiql/commit/eedd5753751857bd5837dd8be8602bf7fadb5517))
+
+## [2.5.1](https://github.com/graphql/graphiql/compare/graphql-language-service-server@2.5.0...graphql-language-service-server@2.5.1) (2020-09-20)
+
+### Bug Fixes
+
+- better error handling when the config isn't present ([#1667](https://github.com/graphql/graphiql/issues/1667)) ([f414300](https://github.com/graphql/graphiql/commit/f4143008f93a8849dfa4caae948d2eceb299a141))
+
+# [2.5.0](https://github.com/graphql/graphiql/compare/graphql-language-service-server@2.5.0-alpha.5...graphql-language-service-server@2.5.0) (2020-09-18)
+
+**Note:** Version bump only for package graphql-language-service-server
+
+# [2.5.0-alpha.5](https://github.com/graphql/graphiql/compare/graphql-language-service-server@2.5.0-alpha.4...graphql-language-service-server@2.5.0-alpha.5) (2020-09-11)
+
+**Note:** Version bump only for package graphql-language-service-server
+
+# [2.5.0-alpha.4](https://github.com/graphql/graphiql/compare/graphql-language-service-server@2.5.0-alpha.3...graphql-language-service-server@2.5.0-alpha.4) (2020-08-26)
+
+### Features
+
+- custom config baseDir, embedded fragment def offsets ([#1651](https://github.com/graphql/graphiql/issues/1651)) ([e8dc958](https://github.com/graphql/graphiql/commit/e8dc958b46544022fe58b498ca5eef572f54afe0))
+
+# [2.5.0-alpha.3](https://github.com/graphql/graphiql/compare/graphql-language-service-server@2.5.0-alpha.2...graphql-language-service-server@2.5.0-alpha.3) (2020-08-22)
+
+**Note:** Version bump only for package graphql-language-service-server
+
+# [2.5.0-alpha.2](https://github.com/graphql/graphiql/compare/graphql-language-service-server@2.5.0-alpha.1...graphql-language-service-server@2.5.0-alpha.2) (2020-08-12)
+
+**Note:** Version bump only for package graphql-language-service-server
+
+# [2.5.0-alpha.1](https://github.com/graphql/graphiql/compare/graphql-language-service-server@2.5.0-alpha.0...graphql-language-service-server@2.5.0-alpha.1) (2020-08-12)
+
+### Bug Fixes
+
+- recursively write tmp directories, write schema async ([#1641](https://github.com/graphql/graphiql/issues/1641)) ([cd0061e](https://github.com/graphql/graphiql/commit/cd0061e1abe47f5f4075d52a6c1e4157cbd0a95a))
+
+# [2.5.0-alpha.0](https://github.com/graphql/graphiql/compare/graphql-language-service-server@2.4.1...graphql-language-service-server@2.5.0-alpha.0) (2020-08-10)
+
+### Bug Fixes
+
+- pre-cacheing schema bugs, new server config options ([#1636](https://github.com/graphql/graphiql/issues/1636)) ([d989456](https://github.com/graphql/graphiql/commit/d9894564c056134e15093956e0951dcefe061d76))
+
+### Features
+
+- graphql-config@3 support in lsp server ([#1616](https://github.com/graphql/graphiql/issues/1616)) ([27cd185](https://github.com/graphql/graphiql/commit/27cd18562b64dfe18e6343b6a49f3f606af89d86))
+
+## [2.4.1](https://github.com/graphql/graphiql/compare/graphql-language-service-server@2.4.0...graphql-language-service-server@2.4.1) (2020-08-06)
+
+**Note:** Version bump only for package graphql-language-service-server
+
+# [2.4.0](https://github.com/graphql/graphiql/compare/graphql-language-service-server@2.4.0-alpha.12...graphql-language-service-server@2.4.0) (2020-06-11)
+
+**Note:** Version bump only for package graphql-language-service-server
+
 # [2.4.0-alpha.12](https://github.com/graphql/graphiql/compare/graphql-language-service-server@2.4.0-alpha.11...graphql-language-service-server@2.4.0-alpha.12) (2020-06-04)
 
 **Note:** Version bump only for package graphql-language-service-server

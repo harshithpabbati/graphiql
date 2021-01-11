@@ -1,5 +1,5 @@
 /**
- *  Copyright (c) 2019 GraphQL Contributors
+ *  Copyright (c) 2020 GraphQL Contributors
  *  All rights reserved.
  *
  *  This source code is licensed under the license found in the
@@ -9,7 +9,15 @@
  */
 
 import fs from 'fs';
-import { buildSchema, parse, GraphQLSchema, GraphQLError } from 'graphql';
+import {
+  buildSchema,
+  parse,
+  GraphQLSchema,
+  GraphQLError,
+  ValidationContext,
+  ASTVisitor,
+  FragmentDefinitionNode,
+} from 'graphql';
 import path from 'path';
 
 import {
@@ -66,7 +74,7 @@ describe('getDiagnostics', () => {
     )[0];
     expect(error.message).toEqual(
       // eslint-disable-next-line no-useless-escape
-      'The field "Query.deprecatedField" is deprecated. Use test instead.',
+      'The field Query.deprecatedField is deprecated. Use test instead.',
     );
     expect(error.severity).toEqual(DIAGNOSTIC_SEVERITY.Warning);
     expect(error.source).toEqual('GraphQL: Deprecation');
@@ -104,7 +112,6 @@ describe('getDiagnostics', () => {
     expect(error.severity).toEqual(DIAGNOSTIC_SEVERITY.Error);
     expect(error.source).toEqual('GraphQL: Syntax');
   });
-
   // TODO: change this kitchen sink to depend on the local schema
   //       and then run diagnostics with the schema
   it('returns no errors after parsing kitchen-sink query', () => {
@@ -112,8 +119,51 @@ describe('getDiagnostics', () => {
       path.join(__dirname, '/kitchen-sink.graphql'),
       'utf8',
     );
-
     const errors = getDiagnostics(kitchenSink);
+    expect(errors).toHaveLength(0);
+  });
+
+  it('returns a error with a custom validation rule', () => {
+    const noQueryRule = (context: ValidationContext): ASTVisitor => ({
+      OperationDefinition(node) {
+        if (node.operation === 'query') {
+          context.reportError(new GraphQLError('No query allowed.', node.name));
+        }
+      },
+    });
+    const errors = getDiagnostics(`query hero { hero { id } }`, schema, [
+      noQueryRule,
+    ]);
+    expect(errors).toHaveLength(1);
+    expect(errors[0].message).toEqual('No query allowed.');
+  });
+
+  it('validates with external fragments', () => {
+    const errors = getDiagnostics(
+      `query hero { hero { ...HeroGuy } }`,
+      schema,
+      [],
+      false,
+      'fragment HeroGuy on Human { id }',
+    );
+    expect(errors).toHaveLength(0);
+  });
+  it('validates with external fragments as array', () => {
+    const externalFragments = parse(`
+      fragment Person on Human {
+        name
+      }
+      fragment Person2 on Human {
+        name
+      }
+    `).definitions as FragmentDefinitionNode[];
+    const errors = getDiagnostics(
+      `query hero { hero { ...Person ...Person2 } }`,
+      schema,
+      [],
+      false,
+      externalFragments,
+    );
     expect(errors).toHaveLength(0);
   });
 });

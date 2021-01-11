@@ -1,12 +1,13 @@
 /**
- *  Copyright (c) 2019 GraphQL Contributors.
+ *  Copyright (c) 2020 GraphQL Contributors.
  *
  *  This source code is licensed under the MIT license found in the
  *  LICENSE file in the root directory of this source tree.
  */
+// / <reference path="../../node_modules/@types/codemirror/addon/hint/show-hint.d.ts" />
+
 import { GraphQLType } from 'graphql';
 import type * as CM from 'codemirror';
-import 'codemirror/addon/hint/show-hint';
 import React from 'react';
 
 import onHasCompletion from '../utility/onHasCompletion';
@@ -16,7 +17,7 @@ declare module CodeMirror {
   export interface Editor extends CM.Editor {}
   export interface ShowHintOptions {
     completeSingle: boolean;
-    hint: CM.HintFunction | CM.AsyncHintFunction;
+    hint: any;
     container: HTMLElement | null;
   }
 }
@@ -49,7 +50,7 @@ type VariableEditorProps = {
  */
 export class VariableEditor extends React.Component<VariableEditorProps> {
   CodeMirror: any;
-  editor: (CM.Editor & { options: any }) | null = null;
+  editor: (CM.Editor & { options: any; showHint: any }) | null = null;
   cachedValue: string;
   private _node: HTMLElement | null = null;
   ignoreChangeEvent: boolean = false;

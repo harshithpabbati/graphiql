@@ -17,11 +17,16 @@ import {
   GraphQLSchema,
   parse,
   print,
+  visit,
   OperationDefinitionNode,
   IntrospectionQuery,
   GraphQLType,
+  ValidationRule,
+  FragmentDefinitionNode,
+  DocumentNode,
 } from 'graphql';
 import copyToClipboard from 'copy-to-clipboard';
+import { getFragmentDependenciesForAST } from 'graphql-language-service';
 
 import { ExecuteButton } from './ExecuteButton';
 import { ImagePreview } from './ImagePreview';
@@ -36,7 +41,7 @@ import { DocExplorer } from './DocExplorer';
 import { QueryHistory } from './QueryHistory';
 import CodeMirrorSizer from '../utility/CodeMirrorSizer';
 import StorageAPI, { Storage } from '../utility/StorageAPI';
-import getQueryFacts, { VariableToType } from '../utility/getQueryFacts';
+import getOperationFacts, { VariableToType } from '../utility/getQueryFacts';
 import getSelectedOperationName from '../utility/getSelectedOperationName';
 import debounce from '../utility/debounce';
 import find from '../utility/find';
@@ -72,11 +77,13 @@ export type Maybe<T> = T | null | undefined;
 export type FetcherParams = {
   query: string;
   operationName: string;
-  variables?: string;
+  variables?: any;
 };
 
 export type FetcherOpts = {
   headers?: { [key: string]: any };
+  shouldPersistHeaders: boolean;
+  documentAST?: DocumentNode;
 };
 
 export type FetcherResult =
@@ -86,19 +93,33 @@ export type FetcherResult =
   | string
   | { data: any };
 
+export type MaybePromise<T> = T | Promise<T>;
+
+export type SyncFetcherResult =
+  | FetcherResult
+  | Observable<FetcherResult>
+  | AsyncIterable<FetcherResult>;
+
+export type FetcherReturnType = MaybePromise<SyncFetcherResult>;
+
 export type Fetcher = (
   graphQLParams: FetcherParams,
   opts?: FetcherOpts,
-) => Promise<FetcherResult> | Observable<FetcherResult>;
+) => FetcherReturnType;
 
 type OnMouseMoveFn = Maybe<
   (moveEvent: MouseEvent | React.MouseEvent<Element>) => void
 >;
 type OnMouseUpFn = Maybe<() => void>;
 
+export type GraphiQLToolbarConfig = {
+  additionalContent?: React.ReactNode;
+};
+
 export type GraphiQLProps = {
   fetcher: Fetcher;
   schema?: GraphQLSchema;
+  validationRules?: ValidationRule[];
   query?: string;
   variables?: string;
   headers?: string;
@@ -109,8 +130,10 @@ export type GraphiQLProps = {
   defaultVariableEditorOpen?: boolean;
   defaultSecondaryEditorOpen?: boolean;
   headerEditorEnabled?: boolean;
+  shouldPersistHeaders?: boolean;
+  externalFragments?: string | FragmentDefinitionNode[];
   onCopyQuery?: (query?: string) => void;
-  onEditQuery?: (query?: string) => void;
+  onEditQuery?: (query?: string, documentAST?: DocumentNode) => void;
   onEditVariables?: (value: string) => void;
   onEditHeaders?: (value: string) => void;
   onEditOperationName?: (operationName: string) => void;
@@ -121,6 +144,7 @@ export type GraphiQLProps = {
   ResultsTooltip?: typeof Component | FunctionComponent;
   readOnly?: boolean;
   docExplorerOpen?: boolean;
+  toolbar?: GraphiQLToolbarConfig;
 };
 
 export type GraphiQLState = {
@@ -137,12 +161,14 @@ export type GraphiQLState = {
   variableEditorActive: boolean;
   headerEditorActive: boolean;
   headerEditorEnabled: boolean;
+  shouldPersistHeaders: boolean;
   historyPaneOpen: boolean;
   docExplorerWidth: number;
   isWaitingForResponse: boolean;
   subscription?: Unsubscribable | null;
   variableToType?: VariableToType;
   operations?: OperationDefinitionNode[];
+  documentAST?: DocumentNode;
 };
 
 /**
@@ -210,8 +236,7 @@ export class GraphiQL extends React.Component<GraphiQLProps, GraphiQLState> {
         : defaultQuery;
 
     // Get the initial query facts.
-    const queryFacts = getQueryFacts(props.schema, query);
-
+    const queryFacts = getOperationFacts(props.schema, query);
     // Determine the initial variables to display.
     const variables =
       props.variables !== undefined
@@ -253,6 +278,7 @@ export class GraphiQL extends React.Component<GraphiQLProps, GraphiQLState> {
     }
 
     const headerEditorEnabled = props.headerEditorEnabled ?? false;
+    const shouldPersistHeaders = props.shouldPersistHeaders ?? false;
 
     // Initialize state
     this.state = {
@@ -271,9 +297,10 @@ export class GraphiQL extends React.Component<GraphiQLProps, GraphiQLState> {
         this._storage.get('variableEditorActive') === 'true' ||
         props.headerEditorEnabled
           ? this._storage.get('headerEditorActive') !== 'true'
-          : secondaryEditorOpen && true,
+          : true,
       headerEditorActive: this._storage.get('headerEditorActive') === 'true',
       headerEditorEnabled,
+      shouldPersistHeaders,
       historyPaneOpen: this._storage.get('historyPaneOpen') === 'true' || false,
       docExplorerWidth:
         Number(this._storage.get('docExplorerWidth')) ||
@@ -299,6 +326,9 @@ export class GraphiQL extends React.Component<GraphiQLProps, GraphiQLState> {
 
     global.g = this;
   }
+  UNSAFE_componentWillMount() {
+    this.componentIsMounted = false;
+  }
   // TODO: these values should be updated in a reducer imo
   // eslint-disable-next-line camelcase
   UNSAFE_componentWillReceiveProps(nextProps: GraphiQLProps) {
@@ -312,13 +342,19 @@ export class GraphiQL extends React.Component<GraphiQLProps, GraphiQLState> {
     if (nextProps.schema !== undefined) {
       nextSchema = nextProps.schema;
     }
-    if (nextProps.query !== undefined) {
+    if (nextProps.query !== undefined && this.props.query !== nextProps.query) {
       nextQuery = nextProps.query;
     }
-    if (nextProps.variables !== undefined) {
+    if (
+      nextProps.variables !== undefined &&
+      this.props.variables !== nextProps.variables
+    ) {
       nextVariables = nextProps.variables;
     }
-    if (nextProps.headers !== undefined) {
+    if (
+      nextProps.headers !== undefined &&
+      this.props.headers !== nextProps.headers
+    ) {
       nextHeaders = nextProps.headers;
     }
     if (nextProps.operationName !== undefined) {
@@ -426,6 +462,9 @@ export class GraphiQL extends React.Component<GraphiQLProps, GraphiQLState> {
           title="Show History"
           label="History"
         />
+        {this.props.toolbar?.additionalContent
+          ? this.props.toolbar.additionalContent
+          : null}
       </GraphiQL.Toolbar>
     );
 
@@ -518,6 +557,7 @@ export class GraphiQL extends React.Component<GraphiQLProps, GraphiQLState> {
                   this.queryEditorComponent = n;
                 }}
                 schema={this.state.schema}
+                validationRules={this.props.validationRules}
                 value={this.state.query}
                 onEdit={this.handleEditQuery}
                 onHintInformationRender={this.handleHintInformationRender}
@@ -528,6 +568,7 @@ export class GraphiQL extends React.Component<GraphiQLProps, GraphiQLState> {
                 onRunQuery={this.handleEditorRunQuery}
                 editorTheme={this.props.editorTheme}
                 readOnly={this.props.readOnly}
+                externalFragments={this.props.externalFragments}
               />
               <section
                 className="variable-editor secondary-editor"
@@ -779,12 +820,27 @@ export class GraphiQL extends React.Component<GraphiQLProps, GraphiQLState> {
   private fetchSchema() {
     const fetcher = this.props.fetcher;
 
-    const fetch = observableToPromise(
-      fetcher({
-        query: introspectionQuery,
-        operationName: introspectionQueryName,
-      }),
+    const fetcherOpts: FetcherOpts = {
+      shouldPersistHeaders: Boolean(this.props.shouldPersistHeaders),
+      documentAST: this.state.documentAST,
+    };
+    if (this.state.headers && this.state.headers.trim().length > 2) {
+      fetcherOpts.headers = JSON.parse(this.state.headers);
+      // if state is not present, but props are
+    } else if (this.props.headers) {
+      fetcherOpts.headers = JSON.parse(this.props.headers);
+    }
+
+    const fetch = fetcherReturnToPromise(
+      fetcher(
+        {
+          query: introspectionQuery,
+          operationName: introspectionQueryName,
+        },
+        fetcherOpts,
+      ),
     );
+
     if (!isPromise(fetch)) {
       this.setState({
         response: 'Fetcher did not return a Promise for introspection.',
@@ -800,11 +856,14 @@ export class GraphiQL extends React.Component<GraphiQLProps, GraphiQLState> {
 
         // Try the stock introspection query first, falling back on the
         // sans-subscriptions query for services which do not yet support it.
-        const fetch2 = observableToPromise(
-          fetcher({
-            query: introspectionQuerySansSubscriptions,
-            operationName: introspectionQueryName,
-          }),
+        const fetch2 = fetcherReturnToPromise(
+          fetcher(
+            {
+              query: introspectionQuerySansSubscriptions,
+              operationName: introspectionQueryName,
+            },
+            fetcherOpts,
+          ),
         );
         if (!isPromise(fetch)) {
           throw new Error(
@@ -823,7 +882,7 @@ export class GraphiQL extends React.Component<GraphiQLProps, GraphiQLState> {
 
         if (typeof result !== 'string' && 'data' in result) {
           const schema = buildClientSchema(result.data);
-          const queryFacts = getQueryFacts(schema, this.state.query);
+          const queryFacts = getOperationFacts(schema, this.state.query);
           this.safeSetState({ schema, ...queryFacts });
         } else {
           const responseString =
@@ -843,13 +902,14 @@ export class GraphiQL extends React.Component<GraphiQLProps, GraphiQLState> {
       });
   }
 
-  private _fetchQuery(
+  private async _fetchQuery(
     query: string,
     variables: string,
     headers: string,
     operationName: string,
+    shouldPersistHeaders: boolean,
     cb: (value: FetcherResult) => any,
-  ) {
+  ): Promise<null | Unsubscribable> {
     const fetcher = this.props.fetcher;
     let jsonVariables = null;
     let jsonHeaders = null;
@@ -875,6 +935,38 @@ export class GraphiQL extends React.Component<GraphiQLProps, GraphiQLState> {
     if (typeof jsonHeaders !== 'object') {
       throw new Error('Headers are not a JSON object.');
     }
+    // TODO: memoize this
+    if (this.props.externalFragments) {
+      const externalFragments = new Map<string, FragmentDefinitionNode>();
+
+      if (Array.isArray(this.props.externalFragments)) {
+        this.props.externalFragments.forEach(def => {
+          externalFragments.set(def.name.value, def);
+        });
+      } else {
+        visit(
+          parse(this.props.externalFragments, {
+            experimentalFragmentVariables: true,
+          }),
+          {
+            FragmentDefinition(def) {
+              externalFragments.set(def.name.value, def);
+            },
+          },
+        );
+      }
+      const fragmentDependencies = getFragmentDependenciesForAST(
+        this.state.documentAST!,
+        externalFragments,
+      );
+      if (fragmentDependencies.length > 0) {
+        query +=
+          '\n' +
+          fragmentDependencies
+            .map((node: FragmentDefinitionNode) => print(node))
+            .join('\n');
+      }
+    }
 
     const fetch = fetcher(
       {
@@ -882,43 +974,71 @@ export class GraphiQL extends React.Component<GraphiQLProps, GraphiQLState> {
         variables: jsonVariables,
         operationName,
       },
-      { headers: jsonHeaders },
+      {
+        headers: jsonHeaders,
+        shouldPersistHeaders,
+        documentAST: this.state.documentAST,
+      },
     );
 
-    if (isPromise(fetch)) {
-      // If fetcher returned a Promise, then call the callback when the promise
-      // resolves, otherwise handle the error.
-      fetch.then(cb).catch(error => {
+    return Promise.resolve<SyncFetcherResult>(fetch)
+      .then(value => {
+        if (isObservable(value)) {
+          // If the fetcher returned an Observable, then subscribe to it, calling
+          // the callback on each next value, and handling both errors and the
+          // completion of the Observable. Returns a Subscription object.
+          const subscription = value.subscribe({
+            next: cb,
+            error: (error: Error) => {
+              this.safeSetState({
+                isWaitingForResponse: false,
+                response: error ? GraphiQL.formatError(error) : undefined,
+                subscription: null,
+              });
+            },
+            complete: () => {
+              this.safeSetState({
+                isWaitingForResponse: false,
+                subscription: null,
+              });
+            },
+          });
+
+          return subscription;
+        } else if (isAsyncIterable(value)) {
+          (async () => {
+            try {
+              for await (const result of value) {
+                cb(result);
+              }
+              this.safeSetState({
+                isWaitingForResponse: false,
+                subscription: null,
+              });
+            } catch (error) {
+              this.safeSetState({
+                isWaitingForResponse: false,
+                response: error ? GraphiQL.formatError(error) : undefined,
+                subscription: null,
+              });
+            }
+          })();
+
+          return {
+            unsubscribe: () => value[Symbol.asyncIterator]().return?.(),
+          };
+        } else {
+          cb(value);
+          return null;
+        }
+      })
+      .catch(error => {
         this.safeSetState({
           isWaitingForResponse: false,
           response: error ? GraphiQL.formatError(error) : undefined,
         });
+        return null;
       });
-    } else if (isObservable(fetch)) {
-      // If the fetcher returned an Observable, then subscribe to it, calling
-      // the callback on each next value, and handling both errors and the
-      // completion of the Observable. Returns a Subscription object.
-      const subscription = fetch.subscribe({
-        next: cb,
-        error: (error: Error) => {
-          this.safeSetState({
-            isWaitingForResponse: false,
-            response: error ? GraphiQL.formatError(error) : undefined,
-            subscription: null,
-          });
-        },
-        complete: () => {
-          this.safeSetState({
-            isWaitingForResponse: false,
-            subscription: null,
-          });
-        },
-      });
-
-      return subscription;
-    } else {
-      throw new Error('Fetcher did not return Promise or Observable.');
-    }
   }
 
   handleClickReference = (reference: GraphQLType) => {
@@ -933,7 +1053,7 @@ export class GraphiQL extends React.Component<GraphiQLProps, GraphiQLState> {
     );
   };
 
-  handleRunQuery = (selectedOperationName?: string) => {
+  handleRunQuery = async (selectedOperationName?: string) => {
     this._editorQueryID++;
     const queryID = this._editorQueryID;
 
@@ -943,6 +1063,7 @@ export class GraphiQL extends React.Component<GraphiQLProps, GraphiQLState> {
     const editedQuery = this.autoCompleteLeafs() || this.state.query;
     const variables = this.state.variables;
     const headers = this.state.headers;
+    const shouldPersistHeaders = this.state.shouldPersistHeaders;
     let operationName = this.state.operationName;
 
     // If an operation was explicitly provided, different from the current
@@ -970,11 +1091,12 @@ export class GraphiQL extends React.Component<GraphiQLProps, GraphiQLState> {
       }
 
       // _fetchQuery may return a subscription.
-      const subscription = this._fetchQuery(
+      const subscription = await this._fetchQuery(
         editedQuery as string,
         variables as string,
         headers as string,
         operationName as string,
+        shouldPersistHeaders as boolean,
         (result: FetcherResult) => {
           if (queryID === this._editorQueryID) {
             this.setState({
@@ -1040,7 +1162,9 @@ export class GraphiQL extends React.Component<GraphiQLProps, GraphiQLState> {
   handlePrettifyQuery = () => {
     const editor = this.getQueryEditor();
     const editorContent = editor?.getValue() ?? '';
-    const prettifiedEditorContent = print(parse(editorContent));
+    const prettifiedEditorContent = print(
+      parse(editorContent, { experimentalFragmentVariables: true }),
+    );
 
     if (prettifiedEditorContent !== editorContent) {
       editor?.setValue(prettifiedEditorContent);
@@ -1087,8 +1211,8 @@ export class GraphiQL extends React.Component<GraphiQLProps, GraphiQLState> {
       return;
     }
 
-    const ast = parse(query);
-    editor.setValue(print(mergeAST(ast)));
+    const ast = this.state.documentAST!;
+    editor.setValue(print(mergeAST(ast, this.state.schema)));
   };
 
   handleEditQuery = debounce(100, (value: string) => {
@@ -1104,7 +1228,7 @@ export class GraphiQL extends React.Component<GraphiQLProps, GraphiQLState> {
     });
     this._storage.set('query', value);
     if (this.props.onEditQuery) {
-      return this.props.onEditQuery(value);
+      return this.props.onEditQuery(value, queryFacts?.documentAST);
     }
   });
 
@@ -1129,7 +1253,7 @@ export class GraphiQL extends React.Component<GraphiQLProps, GraphiQLState> {
     prevOperations?: OperationDefinitionNode[],
     schema?: GraphQLSchema,
   ) => {
-    const queryFacts = getQueryFacts(schema, query);
+    const queryFacts = getOperationFacts(schema, query);
     if (queryFacts) {
       // Update operation name should any query names change.
       const updatedOperationName = getSelectedOperationName(
@@ -1165,6 +1289,8 @@ export class GraphiQL extends React.Component<GraphiQLProps, GraphiQLState> {
 
   handleEditHeaders = (value: string) => {
     this.setState({ headers: value });
+    this.props.shouldPersistHeaders &&
+      debounce(500, () => this._storage.set('headers', value))();
     if (this.props.onEditHeaders) {
       this.props.onEditHeaders(value);
     }
@@ -1227,22 +1353,22 @@ export class GraphiQL extends React.Component<GraphiQLProps, GraphiQLState> {
     if (typeof this.props.onToggleDocs === 'function') {
       this.props.onToggleDocs(!this.state.docExplorerOpen);
     }
-    this.setState({ docExplorerOpen: !this.state.docExplorerOpen });
     this._storage.set(
       'docExplorerOpen',
-      JSON.stringify(this.state.docExplorerOpen),
+      JSON.stringify(!this.state.docExplorerOpen),
     );
+    this.setState({ docExplorerOpen: !this.state.docExplorerOpen });
   };
 
   handleToggleHistory = () => {
     if (typeof this.props.onToggleHistory === 'function') {
       this.props.onToggleHistory(!this.state.historyPaneOpen);
     }
-    this.setState({ historyPaneOpen: !this.state.historyPaneOpen });
     this._storage.set(
       'historyPaneOpen',
-      JSON.stringify(this.state.historyPaneOpen),
+      JSON.stringify(!this.state.historyPaneOpen),
     );
+    this.setState({ historyPaneOpen: !this.state.historyPaneOpen });
   };
 
   handleSelectHistoryQuery = (
@@ -1579,12 +1705,7 @@ type Observable<T> = {
 };
 
 // Duck-type Observable.take(1).toPromise()
-function observableToPromise<T>(
-  observable: Observable<T> | Promise<T>,
-): Promise<T> {
-  if (!isObservable<T>(observable)) {
-    return observable;
-  }
+function observableToPromise<T>(observable: Observable<T>): Promise<T> {
   return new Promise((resolve, reject) => {
     const subscription = observable.subscribe(
       v => {
@@ -1606,6 +1727,58 @@ function isObservable<T>(value: any): value is Observable<T> {
     'subscribe' in value &&
     typeof value.subscribe === 'function'
   );
+}
+
+function isAsyncIterable(input: unknown): input is AsyncIterable<unknown> {
+  return (
+    typeof input === 'object' &&
+    input !== null &&
+    // Some browsers still don't have Symbol.asyncIterator implemented (iOS Safari)
+    // That means every custom AsyncIterable must be built using a AsyncGeneratorFunction (async function * () {})
+    ((input as any)[Symbol.toStringTag] === 'AsyncGenerator' ||
+      Symbol.asyncIterator in input)
+  );
+}
+
+function asyncIterableToPromise<T>(
+  input: AsyncIterable<T> | AsyncIterableIterator<T>,
+): Promise<T> {
+  return new Promise((resolve, reject) => {
+    // Also support AsyncGenerator on Safari iOS.
+    // As mentioned in the isAsyncIterable function there is no Symbol.asyncIterator available
+    // so every AsyncIterable must be implemented using AsyncGenerator.
+    const iteratorReturn = ('return' in input
+      ? input
+      : input[Symbol.asyncIterator]()
+    ).return?.bind(input);
+    const iteratorNext = ('next' in input
+      ? input
+      : input[Symbol.asyncIterator]()
+    ).next.bind(input);
+
+    iteratorNext()
+      .then(result => {
+        resolve(result.value);
+        // ensure cleanup
+        iteratorReturn?.();
+      })
+      .catch(err => {
+        reject(err);
+      });
+  });
+}
+
+function fetcherReturnToPromise(
+  fetcherResult: FetcherReturnType,
+): Promise<FetcherResult> {
+  return Promise.resolve(fetcherResult).then(fetcherResult => {
+    if (isAsyncIterable(fetcherResult)) {
+      return asyncIterableToPromise(fetcherResult);
+    } else if (isObservable(fetcherResult)) {
+      return observableToPromise(fetcherResult);
+    }
+    return fetcherResult;
+  });
 }
 
 // Determines if the React child is of the same type of the provided React component

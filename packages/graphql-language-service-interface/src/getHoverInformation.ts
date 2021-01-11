@@ -1,5 +1,5 @@
 /**
- *  Copyright (c) 2019 GraphQL Contributors
+ *  Copyright (c) 2020 GraphQL Contributors
  *  All rights reserved.
  *
  *  This source code is licensed under the license found in the
@@ -9,7 +9,7 @@
 
 /**
  * Ported from codemirror-graphql
- * https://github.com/graphql/codemirror-graphql/blob/master/src/info.js
+ * https://github.com/graphql/blob/main/packages/codemirror-graphql/src/info.js
  */
 
 import {
@@ -21,7 +21,7 @@ import {
   GraphQLFieldConfig,
 } from 'graphql';
 import { ContextToken } from 'graphql-language-service-parser';
-import { AllTypeInfo, Position } from 'graphql-language-service-types';
+import { AllTypeInfo, IPosition } from 'graphql-language-service-types';
 
 import { Hover } from 'vscode-languageserver-types';
 import { getTokenAtPosition, getTypeInfo } from './getAutocompleteSuggestions';
@@ -29,7 +29,7 @@ import { getTokenAtPosition, getTypeInfo } from './getAutocompleteSuggestions';
 export function getHoverInformation(
   schema: GraphQLSchema,
   queryText: string,
-  cursor: Position,
+  cursor: IPosition,
   contextToken?: ContextToken,
 ): Hover['contents'] {
   const token = contextToken || getTokenAtPosition(queryText, cursor);

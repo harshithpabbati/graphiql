@@ -1,5 +1,4 @@
 import { Kind } from 'graphql';
-import { _Kind } from 'graphql/language/kinds';
 import { Maybe } from 'graphql-language-service-types';
 import CharacterStream from './CharacterStream';
 
@@ -80,6 +79,9 @@ export const AdditionalRuleKinds: _AdditionalRuleKinds = {
   ARGUMENTS_DEF: 'ArgumentsDef',
   EXTEND_DEF: 'ExtendDef',
   DIRECTIVE_DEF: 'DirectiveDef',
+  IMPLEMENTS: 'Implements',
+  VARIABLE_DEFINITIONS: 'VariableDefinitions',
+  TYPE: 'Type',
 };
 
 export type _AdditionalRuleKinds = {
@@ -107,6 +109,9 @@ export type _AdditionalRuleKinds = {
   ARGUMENTS_DEF: 'ArgumentsDef';
   EXTEND_DEF: 'ExtendDef';
   DIRECTIVE_DEF: 'DirectiveDef';
+  IMPLEMENTS: 'Implements';
+  VARIABLE_DEFINITIONS: 'VariableDefinitions';
+  TYPE: 'Type';
 };
 
 export const RuleKinds = {
@@ -114,7 +119,7 @@ export const RuleKinds = {
   ...AdditionalRuleKinds,
 };
 
-export type _RuleKinds = _Kind & typeof AdditionalRuleKinds;
+export type _RuleKinds = typeof Kind & typeof AdditionalRuleKinds;
 
 export type RuleKind = _RuleKinds[keyof _RuleKinds];
 export type RuleKindEnum = RuleKind;

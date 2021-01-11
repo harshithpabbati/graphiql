@@ -1,8 +1,14 @@
 # Monaco GraphQL
 
-GraphQL language plugin for the Monaco Editor. You can use it to build vscode/codespaces-like web or desktop IDEs using whatever frontend javascript libraries or frameworks you want (or even vanilla - see [the webpack example](../../examples/monaco-graphql-webpack/)).
+GraphQL language plugin for the Monaco Editor. You can use it to build vscode/codespaces-like web or desktop IDEs using whatever frontend javascript libraries or frameworks you want, or none!
 
-> **NOTE:** This is still in pre-release state. Helping out with this project will help advance GraphiQL and many other GraphQL IDE projects. `codemirror-graphql` still has some more nuanced features
+- [webpack example](https://github.com/graphql/graphiql/tree/main/examples/monaco-graphql-webpack/) using plain javascript
+- [graphiql 2.x RFC example](https://github.com/graphql/graphiql/tree/main/packages/graphiql-2-rfc-context/) using react 16
+- [live demo](https://monaco-graphql.netlify.com) of the monaco webpack example (prompts for github access token!)
+
+> **NOTE:** This is in pre-release state as we build towards GraphiQL 2.0.x. [`codemirror-graphql`](https://github.com/graphql/graphiql/tree/main/packages/codemirror-graphql) has more features (such as JSON variables validation) and is more stable.
+
+## Features
 
 It provides the following features while editing GraphQL files:
 
@@ -11,8 +17,9 @@ It provides the following features while editing GraphQL files:
 - Validation (schema driven)
 - Formatting - using prettier
 - Syntax Highlighting
-- Configurable schema loading (or custom)
+- Configurable schema loading (or custom) - only handles a single schema currently
 - Configurable formatting options
+- Providing external fragments
 
 ## Usage
 
@@ -43,16 +50,17 @@ window.MonacoEnvironment = {
 monaco.editor.create(document.getElementById('someElementId'), {
   value: 'query { }',
   language: 'graphqlDev',
+  formatOnPaste: true,
 });
 
 GraphQLAPI.setSchemaUri('https://localhost:1234/graphql');
 ```
 
-This will cover the basics, making an HTTP POST with the default `introspectionQuery()` operation. To customize the entire fetcher, see [advanced customization]() below
+This will cover the basics, making an HTTP POST with the default `introspectionQuery()` operation. To customize the entire fetcher, see [advanced customization]() below. For more customization options, see the [Monaco Editor API Docs](https://microsoft.github.io/monaco-editor/api/index.html)
 
 ## Advanced Usage
 
-### `GraphQLAPI` ([typedoc](http://graphiql-test.netlify/typedoc/classes/monaco_graphql.languageserviceapi.html))
+### `GraphQLAPI` ([typedoc](https://graphiql-test.netlify.app/typedoc/classes/monaco_graphql.languageserviceapi.html))
 
 If you call any of these API methods to modify the language service configuration at any point at runtime, the webworker will reload relevant language features.
 
@@ -81,7 +89,7 @@ GraphQLAPI.updateSchemaConfig({
 same as the above, except it overwrites the entire schema config
 
 ```ts
-GraphQLAPI.updateSchemaConfig({
+GraphQLAPI.setSchemaConfig({
   uri: 'https://my/schema',
   requestOptions: {
     headers: { Authorization: 'Bear Auth 2134' },
@@ -99,7 +107,7 @@ GraphQLAPI.setSchemaUri('https://localhost:1234/graphql');
 
 #### `GraphQLAPI.setSchema()`
 
-With either an AST string or an `introspectionQuery` JSON, set the schema directly, bypassing the schema fetcher.
+With either a [`RawSchema`](https://graphiql-test.netlify.app/typedoc/modules/graphql_language_service.html#rawschema-2) - an SDL string or an `introspectionQuery` JSON, set the schema directly, bypassing the schema fetcher.
 We can't use a programattic `GraphQLSchema` instance, since this needs to be used by the webworker.
 
 ```ts
@@ -112,12 +120,12 @@ This is where you can toggle monaco language features. all are enabled by defaul
 
 ```ts
 GraphQLAPI.setModeConfiguration({
-  documentFormattingEdits: true;
-  completionItems: true;
-  hovers: true;
-  documentSymbols: true;
-  diagnostics: true;
-})
+  documentFormattingEdits: true,
+  completionItems: true,
+  hovers: true,
+  documentSymbols: true,
+  diagnostics: true,
+});
 ```
 
 #### `GraphQLAPI.setFormattingOptions()`
@@ -133,6 +141,12 @@ GraphQLAPI.setFormattingOptions({
   prettierOptions: { tabWidth: 2, useTabs: true },
 });
 ```
+
+#### `GraphQLAPI.setExternalFragmentDefintions()`
+
+Append external fragments to be used by autocomplete and other language features.
+
+This accepts either a string that contains fragment definitions, or `TypeDefinitionNode[]`
 
 #### `GraphQLAPI.getSchema()`
 
@@ -211,6 +225,8 @@ If you are familiar with Codemirror/Atom-era terminology and features, here's so
 - the default keymap is different, more vscode like
 - command palette and right click context menu are important
 - you can extend the standard completion/linting/etc provided. for example, `editor.setModelMarkers()`
+- [Monaco Editor API Docs](https://microsoft.github.io/monaco-editor/api/index.html)
+- [Monaco Editor Samples](https://github.com/Microsoft/monaco-editor-samples) repository is great for tips on implementing with different bundlers, runtimes, etc
 
 ## TODO
 

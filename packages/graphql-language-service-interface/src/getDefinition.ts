@@ -1,5 +1,5 @@
 /**
- *  Copyright (c) 2019 GraphQL Contributors
+ *  Copyright (c) 2020 GraphQL Contributors
  *  All rights reserved.
  *
  *  This source code is licensed under the license found in the
@@ -19,23 +19,35 @@ import {
 
 import {
   Definition,
-  DefinitionQueryResult,
   FragmentInfo,
-  Position,
-  Range,
   Uri,
   ObjectTypeInfo,
 } from 'graphql-language-service-types';
 
-import { locToRange, offsetToPosition } from 'graphql-language-service-utils';
-import assert from 'assert';
+import {
+  locToRange,
+  offsetToPosition,
+  Range,
+  Position,
+} from 'graphql-language-service-utils';
+
+export type DefinitionQueryResult = {
+  queryRange: Range[];
+  definitions: Definition[];
+};
 
 export const LANGUAGE = 'GraphQL';
+
+function assert(value: any, message: string) {
+  if (!value) {
+    throw new Error(message);
+  }
+}
 
 function getRange(text: string, node: ASTNode): Range {
   const location = node.loc as Location;
   assert(location, 'Expected ASTNode to have a location.');
-  return locToRange(text, location);
+  return locToRange(text, location) as Range;
 }
 
 function getPosition(text: string, node: ASTNode): Position {

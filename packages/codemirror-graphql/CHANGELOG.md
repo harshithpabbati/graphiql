@@ -3,6 +3,74 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.2](https://github.com/graphql/graphiql/compare/codemirror-graphql@0.15.1...codemirror-graphql@0.15.2) (2021-01-07)
+
+**Note:** Version bump only for package codemirror-graphql
+
+## [0.15.1](https://github.com/graphql/graphiql/compare/codemirror-graphql@0.15.0...codemirror-graphql@0.15.1) (2021-01-07)
+
+### Bug Fixes
+
+- bug with externalFragments in codemirror ([#1751](https://github.com/graphql/graphiql/issues/1751)) ([f423e61](https://github.com/graphql/graphiql/commit/f423e615330bf8529f4068889d6760501b732527))
+
+# [0.15.0](https://github.com/graphql/graphiql/compare/codemirror-graphql@0.14.0...codemirror-graphql@0.15.0) (2021-01-07)
+
+### Features
+
+- implied or external fragments, for [#612](https://github.com/graphql/graphiql/issues/612) ([#1750](https://github.com/graphql/graphiql/issues/1750)) ([cfed265](https://github.com/graphql/graphiql/commit/cfed265e3cf31875b39ea517781a217fcdfcadc2))
+
+# [0.14.0](https://github.com/graphql/graphiql/compare/codemirror-graphql@0.13.1...codemirror-graphql@0.14.0) (2021-01-03)
+
+### Features
+
+- merge completion logic (for implements &, variables) ([#1747](https://github.com/graphql/graphiql/issues/1747)) ([0ac0a85](https://github.com/graphql/graphiql/commit/0ac0a856cfc715d7885a9965a9a9114ef2ca4b1a))
+
+## [0.13.1](https://github.com/graphql/graphiql/compare/codemirror-graphql@0.13.0...codemirror-graphql@0.13.1) (2020-12-28)
+
+**Note:** Version bump only for package codemirror-graphql
+
+# [0.13.0](https://github.com/graphql/graphiql/compare/codemirror-graphql@0.12.4...codemirror-graphql@0.13.0) (2020-12-08)
+
+### Features
+
+- provide validation rules via props ([#1716](https://github.com/graphql/graphiql/issues/1716)) ([0c5785c](https://github.com/graphql/graphiql/commit/0c5785c82adbd4affb25300ae2d128b42c9b81fe))
+
+## [0.12.4](https://github.com/graphql/graphiql/compare/codemirror-graphql@0.12.3...codemirror-graphql@0.12.4) (2020-11-28)
+
+**Note:** Version bump only for package codemirror-graphql
+
+## [0.12.3](https://github.com/graphql/graphiql/compare/codemirror-graphql@0.12.2...codemirror-graphql@0.12.3) (2020-10-20)
+
+### Bug Fixes
+
+- **codemirror-graphql:** give interface field name suggestions ([#1695](https://github.com/graphql/graphiql/issues/1695)) ([669b301](https://github.com/graphql/graphiql/commit/669b3013fc679eca7c4e5c8ed6b0cd2fb2dbf2dc))
+
+## [0.12.2](https://github.com/graphql/graphiql/compare/codemirror-graphql@0.12.2-alpha.2...codemirror-graphql@0.12.2) (2020-09-18)
+
+**Note:** Version bump only for package codemirror-graphql
+
+## [0.12.2-alpha.2](https://github.com/graphql/graphiql/compare/codemirror-graphql@0.12.2-alpha.1...codemirror-graphql@0.12.2-alpha.2) (2020-09-11)
+
+**Note:** Version bump only for package codemirror-graphql
+
+## [0.12.2-alpha.1](https://github.com/graphql/graphiql/compare/codemirror-graphql@0.12.2-alpha.0...codemirror-graphql@0.12.2-alpha.1) (2020-08-12)
+
+**Note:** Version bump only for package codemirror-graphql
+
+## [0.12.2-alpha.0](https://github.com/graphql/graphiql/compare/codemirror-graphql@0.12.1...codemirror-graphql@0.12.2-alpha.0) (2020-08-10)
+
+**Note:** Version bump only for package codemirror-graphql
+
+## [0.12.1](https://github.com/graphql/graphiql/compare/codemirror-graphql@0.12.0...codemirror-graphql@0.12.1) (2020-08-06)
+
+**Note:** Version bump only for package codemirror-graphql
+
+# [0.12.0](https://github.com/graphql/graphiql/compare/codemirror-graphql@0.12.0-alpha.11...codemirror-graphql@0.12.0) (2020-06-11)
+
+### Bug Fixes
+
+- value of documentation in completion list ([#1567](https://github.com/graphql/graphiql/issues/1567)) ([39c00a5](https://github.com/graphql/graphiql/commit/39c00a55d7af43ce4e57ad9b1d5cd55393beb0d0))
+
 # [0.12.0-alpha.11](https://github.com/graphql/graphiql/compare/codemirror-graphql@0.12.0-alpha.10...codemirror-graphql@0.12.0-alpha.11) (2020-06-04)
 
 **Note:** Version bump only for package codemirror-graphql

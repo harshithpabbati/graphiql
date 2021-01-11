@@ -1,5 +1,5 @@
 /**
- *  Copyright (c) 2019 GraphQL Contributors
+ *  Copyright (c) 2020 GraphQL Contributors
  *  All rights reserved.
  *
  *  This source code is licensed under the license found in the
@@ -24,6 +24,8 @@ import type {
   GraphQLEnumValue,
   GraphQLField,
   GraphQLInputFieldMap,
+  GraphQLInterfaceType,
+  GraphQLObjectType,
   GraphQLType,
 } from 'graphql/type/definition';
 import type { GraphQLDirective } from 'graphql/type/directives';
@@ -43,6 +45,8 @@ export type {
 
 export interface GraphQLCache {
   getGraphQLConfig: () => GraphQLConfig;
+
+  getProjectForFile: (uri: string) => GraphQLProjectConfig;
 
   getObjectTypeDependencies: (
     query: string,
@@ -103,21 +107,24 @@ export interface GraphQLCache {
 }
 
 // online-parser related
-export type Position = {
+export interface IPosition {
   line: number;
   character: number;
-  lessThanOrEqualTo?: (position: Position) => boolean;
-};
-
-export interface Range {
-  start: Position;
-  end: Position;
-  containsPosition: (position: Position) => boolean;
+  setLine(line: number): void;
+  setCharacter(character: number): void;
+  lessThanOrEqualTo(position: IPosition): boolean;
 }
 
+export interface IRange {
+  start: IPosition;
+  end: IPosition;
+  setEnd(line: number, character: number): void;
+  setStart(line: number, character: number): void;
+  containsPosition(position: IPosition): boolean;
+}
 export type CachedContent = {
   query: string;
-  range: Range | null;
+  range: IRange | null;
 };
 
 // GraphQL Language Service related types
@@ -148,6 +155,8 @@ export type AllTypeInfo = {
   argDef: Maybe<GraphQLArgument>;
   argDefs: Maybe<GraphQLArgument[]>;
   objectFieldDefs: Maybe<GraphQLInputFieldMap>;
+  interfaceDef: Maybe<GraphQLInterfaceType>;
+  objectTypeDef: Maybe<GraphQLObjectType>;
 };
 
 export type FragmentInfo = {
@@ -179,23 +188,19 @@ export type CompletionItem = CompletionItemType & {
   isDeprecated?: boolean;
   documentation?: string | null;
   deprecationReason?: string | null;
+  type?: GraphQLType;
 };
 // Below are basically a copy-paste from Nuclide rpc types for definitions.
 
 // Definitions/hyperlink
 export type Definition = {
   path: Uri;
-  position: Position;
-  range?: Range;
+  position: IPosition;
+  range?: IRange;
   id?: string;
   name?: string;
   language?: string;
   projectRoot?: Uri;
-};
-
-export type DefinitionQueryResult = {
-  queryRange: Range[];
-  definitions: Definition[];
 };
 
 // Outline view
@@ -221,8 +226,8 @@ export type OutlineTree = {
   tokenizedText?: TokenizedText;
   representativeName?: string;
   kind: string;
-  startPosition: Position;
-  endPosition?: Position;
+  startPosition: IPosition;
+  endPosition?: IPosition;
   children: OutlineTree[];
 };
 

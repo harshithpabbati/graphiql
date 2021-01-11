@@ -1,12 +1,12 @@
 {
   "name": "graphql-language-service",
-  "version": "3.0.0-alpha.4",
+  "version": "3.1.2",
   "description": "The official, runtime independent Language Service for GraphQL",
   "contributors": [
     "GraphQL Contributors"
   ],
   "repository": "http://github.com/graphql/graphiql",
-  "homepage": "https://github.com/graphql/graphiql/tree/master/packages/graphql-language-service#readme",
+  "homepage": "https://github.com/graphql/graphiql/tree/main/packages/graphql-language-service#readme",
   "bugs": {
     "url": "https://github.com/graphql/graphiql/issues?q=issue+label:languageservice"
   },
@@ -29,11 +29,8 @@
   "peerDependencies": {
     "graphql": "^14.0.0 || ^15.0.0"
   },
-  "devDependencies": {
-    "graphql-language-service-types": "^1.6.0-alpha.5"
-  },
   "dependencies": {
-    "graphql-language-service-interface": "^2.4.0-alpha.11",
-    "graphql-language-service-types": "^1.6.0-alpha.8"
+    "graphql-language-service-interface": "^2.8.2",
+    "graphql-language-service-types": "^1.8.0"
   }
 }

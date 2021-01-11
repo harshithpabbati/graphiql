@@ -1,5 +1,5 @@
 /**
- *  Copyright (c) 2019 GraphQL Contributors.
+ *  Copyright (c) 2020 GraphQL Contributors.
  *
  *  This source code is licensed under the MIT license found in the
  *  LICENSE file in the root directory of this source tree.
@@ -7,7 +7,12 @@
 
 import React from 'react';
 import type * as CM from 'codemirror';
-import { GraphQLSchema, GraphQLType } from 'graphql';
+import {
+  FragmentDefinitionNode,
+  GraphQLSchema,
+  GraphQLType,
+  ValidationRule,
+} from 'graphql';
 import MD from 'markdown-it';
 import { normalizeWhitespace } from '../utility/normalizeWhitespace';
 import onHasCompletion from '../utility/onHasCompletion';
@@ -19,6 +24,7 @@ const AUTO_COMPLETE_AFTER_KEY = /^[a-zA-Z0-9_@(]$/;
 
 type QueryEditorProps = {
   schema?: GraphQLSchema;
+  validationRules?: ValidationRule[];
   value?: string;
   onEdit?: (value: string) => void;
   readOnly?: boolean;
@@ -29,6 +35,7 @@ type QueryEditorProps = {
   onMergeQuery?: () => void;
   onRunQuery?: () => void;
   editorTheme?: string;
+  externalFragments?: string | FragmentDefinitionNode[];
 };
 
 /**
@@ -47,7 +54,7 @@ type QueryEditorProps = {
 export class QueryEditor extends React.Component<QueryEditorProps, {}>
   implements SizerComponent {
   cachedValue: string | undefined;
-  editor: (CM.Editor & { options: any }) | null = null;
+  editor: (CM.Editor & { options: any; showHint: any }) | null = null;
   ignoreChangeEvent: boolean = false;
 
   _node: HTMLElement | null = null;
@@ -99,12 +106,16 @@ export class QueryEditor extends React.Component<QueryEditorProps, {}>
       },
       lint: {
         schema: this.props.schema,
+        validationRules: this.props.validationRules ?? null,
+        // linting accepts string or FragmentDefinitionNode[]
+        externalFragments: this.props?.externalFragments,
       },
       hintOptions: {
         schema: this.props.schema,
         closeOnUnfocus: false,
         completeSingle: false,
         container: this._node,
+        externalFragments: this.props?.externalFragments,
       },
       info: {
         schema: this.props.schema,

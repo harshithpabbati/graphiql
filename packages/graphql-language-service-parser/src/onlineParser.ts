@@ -1,5 +1,5 @@
 /**
- *  Copyright (c) 2019 GraphQL Contributors
+ *  Copyright (c) 2020 GraphQL Contributors
  *  All rights reserved.
  *
  *  This source code is licensed under the license found in the
@@ -162,7 +162,7 @@ function getToken(
 
     // Seperator between list elements if necessary.
     if (state.needsSeperator) {
-      expected = expected && expected.separator;
+      expected = expected && expected?.separator;
     }
 
     if (expected) {

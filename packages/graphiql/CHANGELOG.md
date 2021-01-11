@@ -3,6 +3,92 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.2](https://github.com/graphql/graphiql/compare/graphiql@1.3.1...graphiql@1.3.2) (2021-01-07)
+
+**Note:** Version bump only for package graphiql
+
+## [1.3.1](https://github.com/graphql/graphiql/compare/graphiql@1.3.0...graphiql@1.3.1) (2021-01-07)
+
+**Note:** Version bump only for package graphiql
+
+# [1.3.0](https://github.com/graphql/graphiql/compare/graphiql@1.2.2...graphiql@1.3.0) (2021-01-07)
+
+### Features
+
+- also support fetcher functions that return Promise<Observable> or Promise ([#1739](https://github.com/graphql/graphiql/issues/1739)) ([a804f3c](https://github.com/graphql/graphiql/commit/a804f3c011e7cafb4f8a48a1ba101b875be3540d))
+- implied or external fragments, for [#612](https://github.com/graphql/graphiql/issues/612) ([#1750](https://github.com/graphql/graphiql/issues/1750)) ([cfed265](https://github.com/graphql/graphiql/commit/cfed265e3cf31875b39ea517781a217fcdfcadc2))
+
+## [1.2.2](https://github.com/graphql/graphiql/compare/graphiql@1.2.1...graphiql@1.2.2) (2021-01-03)
+
+**Note:** Version bump only for package graphiql
+
+## [1.2.1](https://github.com/graphql/graphiql/compare/graphiql@1.2.0...graphiql@1.2.1) (2020-12-28)
+
+### Bug Fixes
+
+- display schema description if available ([050c506](https://github.com/graphql/graphiql/commit/050c506ed4ed2852bf9a5b099f967928d9856156))
+- fix linting issue ([7117b7c](https://github.com/graphql/graphiql/commit/7117b7ccd2a2872e0051c8751252040d4042e190))
+
+# [1.2.0](https://github.com/graphql/graphiql/compare/graphiql@1.1.0...graphiql@1.2.0) (2020-12-08)
+
+### Features
+
+- add AsyncIterable support to fetcher function ([#1724](https://github.com/graphql/graphiql/issues/1724)) ([a568af3](https://github.com/graphql/graphiql/commit/a568af3674404b8a15055792c2c35128b2bd711c))
+- provide validation rules via props ([#1716](https://github.com/graphql/graphiql/issues/1716)) ([0c5785c](https://github.com/graphql/graphiql/commit/0c5785c82adbd4affb25300ae2d128b42c9b81fe))
+
+# [1.1.0](https://github.com/graphql/graphiql/compare/graphiql@1.0.6...graphiql@1.1.0) (2020-11-28)
+
+### Bug Fixes
+
+- improve props in GraphiQL readme ([b9b2c8d](https://github.com/graphql/graphiql/commit/b9b2c8d8bde6064a4cdcb01911b024602fcdbe9f))
+
+### Features
+
+- **graphiql:** add prop for adding toolbar content while preserving the default buttons ([ea81056](https://github.com/graphql/graphiql/commit/ea81056e09b0a95e1536c79fab27e027739808c4))
+- deeper fragment merging ([238d0b5](https://github.com/graphql/graphiql/commit/238d0b5e52cfa9354757c9d52050692d152aae21))
+
+## [1.0.6](https://github.com/graphql/graphiql/compare/graphiql@1.0.5...graphiql@1.0.6) (2020-10-20)
+
+### Bug Fixes
+
+- enable variable editor when header editor is not enabled ([#1682](https://github.com/graphql/graphiql/issues/1682)) ([205fbad](https://github.com/graphql/graphiql/commit/205fbad84806d175d66a6f5598e0a0f521129a16))
+
+## [1.0.5](https://github.com/graphql/graphiql/compare/graphiql@1.0.4...graphiql@1.0.5) (2020-09-18)
+
+**Note:** Version bump only for package graphiql
+
+## [1.0.4](https://github.com/graphql/graphiql/compare/graphiql@2.0.0-alpha.5...graphiql@1.0.4) (2020-09-11)
+
+### Bug Fixes
+
+- dont use initial query on every re-render ([#1663](https://github.com/graphql/graphiql/issues/1663)) ([5aa890f](https://github.com/graphql/graphiql/commit/5aa890f6e145a7ad49f82cc122e209a291060709))
+
+## [1.0.3](https://github.com/graphql/graphiql/compare/graphiql@1.0.2...graphiql@1.0.3) (2020-06-24)
+
+### Bug Fixes
+
+- headers tab - highlighting and schema fetch ([#1593](https://github.com/graphql/graphiql/issues/1593)) ([0d050ca](https://github.com/graphql/graphiql/commit/0d050caeb5278799f2b1c206d0c61f3ac768e7cd))
+
+## [1.0.2](https://github.com/graphql/graphiql/compare/graphiql@1.0.1...graphiql@1.0.2) (2020-06-19)
+
+**Note:** Version bump only for package graphiql
+
+## [1.0.1](https://github.com/graphql/graphiql/compare/graphiql@1.0.0...graphiql@1.0.1) (2020-06-17)
+
+### Bug Fixes
+
+- more server side rendering fixes ([#1581](https://github.com/graphql/graphiql/issues/1581)) ([881a19f](https://github.com/graphql/graphiql/commit/881a19fbd5fbe5f65678de8074e593be7deb2ede)), closes [#1573](https://github.com/graphql/graphiql/issues/1573)
+- network cancellation for 1.0 ([#1582](https://github.com/graphql/graphiql/issues/1582)) ([ad3cc0d](https://github.com/graphql/graphiql/commit/ad3cc0d1567ea49ff5677d4cd8524e5e072b605e))
+- Set headers to localstorage ([#1578](https://github.com/graphql/graphiql/issues/1578)) ([cc7a7e2](https://github.com/graphql/graphiql/commit/cc7a7e2f6d25d7e8150dc89c6984e6a04b01566b))
+
+# [1.0.0](https://github.com/graphql/graphiql/compare/graphiql@1.0.0-alpha.13...graphiql@1.0.0) (2020-06-11)
+
+### Bug Fixes
+
+- call debounce statements as they are functions ([#1571](https://github.com/graphql/graphiql/issues/1571)) ([8541250](https://github.com/graphql/graphiql/commit/85412501307ccfffe258b7fbca74bb9309726a73))
+- fix server side rendering by using type only codemirror import ([#1573](https://github.com/graphql/graphiql/issues/1573)) ([1ee60a6](https://github.com/graphql/graphiql/commit/1ee60a6db87d54c7a1e8f1089e52a65f335351b6)), closes [#118](https://github.com/graphql/graphiql/issues/118)
+- Move all componentWillUnMount functionality to respective events ([#1544](https://github.com/graphql/graphiql/issues/1544)) ([046b09f](https://github.com/graphql/graphiql/commit/046b09f541e6a9f2ce4b46de590d49c04c916716))
+
 # [1.0.0-alpha.13](https://github.com/graphql/graphiql/compare/graphiql@1.0.0-alpha.12...graphiql@1.0.0-alpha.13) (2020-06-04)
 
 **Note:** Version bump only for package graphiql

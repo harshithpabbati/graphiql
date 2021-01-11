@@ -1,4 +1,3 @@
-/* global monaco */
 /**
  *  Copyright (c) 2020 GraphQL Contributors.
  *
@@ -15,6 +14,8 @@ import {
 } from './api';
 
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+
+export * from './typings';
 
 export const LANGUAGE_ID = 'graphqlDev';
 

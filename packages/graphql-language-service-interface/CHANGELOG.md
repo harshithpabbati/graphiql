@@ -3,6 +3,78 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.2](https://github.com/graphql/graphiql/compare/graphql-language-service-interface@2.8.1...graphql-language-service-interface@2.8.2) (2021-01-07)
+
+**Note:** Version bump only for package graphql-language-service-interface
+
+## [2.8.1](https://github.com/graphql/graphiql/compare/graphql-language-service-interface@2.8.0...graphql-language-service-interface@2.8.1) (2021-01-07)
+
+### Bug Fixes
+
+- bug with externalFragments in codemirror ([#1751](https://github.com/graphql/graphiql/issues/1751)) ([f423e61](https://github.com/graphql/graphiql/commit/f423e615330bf8529f4068889d6760501b732527))
+
+# [2.8.0](https://github.com/graphql/graphiql/compare/graphql-language-service-interface@2.7.0...graphql-language-service-interface@2.8.0) (2021-01-07)
+
+### Features
+
+- implied or external fragments, for [#612](https://github.com/graphql/graphiql/issues/612) ([#1750](https://github.com/graphql/graphiql/issues/1750)) ([cfed265](https://github.com/graphql/graphiql/commit/cfed265e3cf31875b39ea517781a217fcdfcadc2))
+
+# [2.7.0](https://github.com/graphql/graphiql/compare/graphql-language-service-interface@2.6.0...graphql-language-service-interface@2.7.0) (2021-01-03)
+
+### Features
+
+- merge completion logic (for implements &, variables) ([#1747](https://github.com/graphql/graphiql/issues/1747)) ([0ac0a85](https://github.com/graphql/graphiql/commit/0ac0a856cfc715d7885a9965a9a9114ef2ca4b1a))
+
+# [2.6.0](https://github.com/graphql/graphiql/compare/graphql-language-service-interface@2.5.0...graphql-language-service-interface@2.6.0) (2020-12-28)
+
+### Features
+
+- interfaces implementing interfaces for the LSP ([#1742](https://github.com/graphql/graphiql/issues/1742)) ([c4cba85](https://github.com/graphql/graphiql/commit/c4cba85e869105f5363ebcb3826b4cf7b7e62c00))
+
+# [2.5.0](https://github.com/graphql/graphiql/compare/graphql-language-service-interface@2.4.3...graphql-language-service-interface@2.5.0) (2020-12-08)
+
+### Bug Fixes
+
+- dont use new deprecation rule yet ([8f0a4ac](https://github.com/graphql/graphiql/commit/8f0a4ac3331785994e4fe2d98637af0359314359))
+
+### Features
+
+- provide validation rules via props ([#1716](https://github.com/graphql/graphiql/issues/1716)) ([0c5785c](https://github.com/graphql/graphiql/commit/0c5785c82adbd4affb25300ae2d128b42c9b81fe))
+
+## [2.4.3](https://github.com/graphql/graphiql/compare/graphql-language-service-interface@2.4.2...graphql-language-service-interface@2.4.3) (2020-11-28)
+
+### Bug Fixes
+
+- remove assert module dependency ([2855dc5](https://github.com/graphql/graphiql/commit/2855dc513d03dd260607572e2fe76b22dcd16271))
+
+## [2.4.2](https://github.com/graphql/graphiql/compare/graphql-language-service-interface@2.4.2-alpha.2...graphql-language-service-interface@2.4.2) (2020-09-18)
+
+**Note:** Version bump only for package graphql-language-service-interface
+
+## [2.4.2-alpha.2](https://github.com/graphql/graphiql/compare/graphql-language-service-interface@2.4.2-alpha.1...graphql-language-service-interface@2.4.2-alpha.2) (2020-09-11)
+
+**Note:** Version bump only for package graphql-language-service-interface
+
+## [2.4.2-alpha.1](https://github.com/graphql/graphiql/compare/graphql-language-service-interface@2.4.2-alpha.0...graphql-language-service-interface@2.4.2-alpha.1) (2020-08-12)
+
+**Note:** Version bump only for package graphql-language-service-interface
+
+## [2.4.2-alpha.0](https://github.com/graphql/graphiql/compare/graphql-language-service-interface@2.4.1...graphql-language-service-interface@2.4.2-alpha.0) (2020-08-10)
+
+**Note:** Version bump only for package graphql-language-service-interface
+
+## [2.4.1](https://github.com/graphql/graphiql/compare/graphql-language-service-interface@2.4.0...graphql-language-service-interface@2.4.1) (2020-08-06)
+
+### Bug Fixes
+
+- regression for variable def completion [#1622](https://github.com/graphql/graphiql/issues/1622) ([#1624](https://github.com/graphql/graphiql/issues/1624)) ([4f62a8f](https://github.com/graphql/graphiql/commit/4f62a8fd50d5a0357490c4e6a6a3016ef8972455))
+
+# [2.4.0](https://github.com/graphql/graphiql/compare/graphql-language-service-interface@2.4.0-alpha.11...graphql-language-service-interface@2.4.0) (2020-06-11)
+
+### Bug Fixes
+
+- highlightNode xxx in xxx syntax to revert back to simple dot notation for checking of existence ([#1566](https://github.com/graphql/graphiql/issues/1566)) ([cc7fbfe](https://github.com/graphql/graphiql/commit/cc7fbfe89d65943f23f58187c3fa3bdf0d4bbf1d))
+
 # [2.4.0-alpha.11](https://github.com/graphql/graphiql/compare/graphql-language-service-interface@2.4.0-alpha.10...graphql-language-service-interface@2.4.0-alpha.11) (2020-06-04)
 
 **Note:** Version bump only for package graphql-language-service-interface

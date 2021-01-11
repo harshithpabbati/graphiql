@@ -1,5 +1,5 @@
 /**
- *  Copyright (c) 2019 GraphQL Contributors
+ *  Copyright (c) 2020 GraphQL Contributors
  *  All rights reserved.
  *
  *  This source code is licensed under the license found in the
@@ -18,10 +18,9 @@ import {
 
 import {
   CompletionItem,
-  DefinitionQueryResult,
   Diagnostic,
   Uri,
-  Position,
+  IPosition,
   Outline,
   OutlineTree,
   GraphQLCache,
@@ -42,6 +41,7 @@ import {
   getDefinitionQueryResultForFragmentSpread,
   getDefinitionQueryResultForDefinitionNode,
   getDefinitionQueryResultForNamedType,
+  DefinitionQueryResult,
 } from './getDefinition';
 
 import { getOutline } from './getOutline';
@@ -106,7 +106,7 @@ export class GraphQLLanguageService {
   }
 
   getConfigForURI(uri: Uri) {
-    const config = this._graphQLConfig.getProjectForFile(uri);
+    const config = this._graphQLCache.getProjectForFile(uri);
     if (config) {
       return config;
     }
@@ -194,9 +194,11 @@ export class GraphQLLanguageService {
 
     // Check if there are custom validation rules to be used
     let customRules: ValidationRule[] | null = null;
-    const customValidationRules = extensions.customValidationRules;
-    if (customValidationRules) {
-      customRules = customValidationRules(this._graphQLConfig);
+    if (
+      extensions?.customValidationRules &&
+      typeof extensions.customValidationRules === 'function'
+    ) {
+      customRules = extensions.customValidationRules(this._graphQLConfig);
 
       /* eslint-enable no-implicit-coercion */
     }
@@ -219,21 +221,34 @@ export class GraphQLLanguageService {
 
   public async getAutocompleteSuggestions(
     query: string,
-    position: Position,
+    position: IPosition,
     filePath: Uri,
   ): Promise<Array<CompletionItem>> {
     const projectConfig = this.getConfigForURI(filePath);
     const schema = await this._graphQLCache.getSchema(projectConfig.name);
+    const fragmentDefinitions = await this._graphQLCache.getFragmentDefinitions(
+      projectConfig,
+    );
+
+    const fragmentInfo = Array.from(fragmentDefinitions).map(
+      ([, info]) => info.definition,
+    );
 
     if (schema) {
-      return getAutocompleteSuggestions(schema, query, position);
+      return getAutocompleteSuggestions(
+        schema,
+        query,
+        position,
+        undefined,
+        fragmentInfo,
+      );
     }
     return [];
   }
 
   public async getHoverInformation(
     query: string,
-    position: Position,
+    position: IPosition,
     filePath: Uri,
   ): Promise<Hover['contents']> {
     const projectConfig = this.getConfigForURI(filePath);
@@ -247,7 +262,7 @@ export class GraphQLLanguageService {
 
   public async getDefinition(
     query: string,
-    position: Position,
+    position: IPosition,
     filePath: Uri,
   ): Promise<DefinitionQueryResult | null> {
     const projectConfig = this.getConfigForURI(filePath);

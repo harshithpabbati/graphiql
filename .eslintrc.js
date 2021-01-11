@@ -29,6 +29,7 @@ module.exports = {
     es6: true,
     node: true,
     browser: true,
+    jest: true,
   },
 
   extends: [
@@ -42,6 +43,7 @@ module.exports = {
     atom: false,
     document: false,
     window: false,
+    monaco: true,
     Map: true,
     Set: true,
   },
@@ -266,6 +268,7 @@ module.exports = {
     // import (https://github.com/benmosher/eslint-plugin-import)
     // 'import/no-unresolved': [2, { modules: 'es6' }],
     'import/no-cycle': 0,
+    'import/no-extraneous-dependencies': 1,
 
     // prefer-object-spread (https://github.com/bryanrsmith/eslint-plugin-prefer-object-spread)
     'prefer-object-spread/prefer-object-spread': 1,
@@ -313,7 +316,7 @@ module.exports = {
       },
     },
     {
-      files: ['packages/{graphql-*,graphiql}/src/**'],
+      files: ['packages/{graphql-*,graphiql}/src/**', 'plugins/*/src/**'],
       extends: ['plugin:jest/recommended'],
       env: {
         'jest/globals': true,
@@ -357,7 +360,7 @@ module.exports = {
     },
     {
       // Resources are typically our helper scripts; make life easier there
-      files: ['resources/*.js', 'packages/*/resources/*.js'],
+      files: ['resources/*.js', '**/resources/*.js'],
       rules: {
         'no-console': 0,
         'no-await-in-loop': 0,

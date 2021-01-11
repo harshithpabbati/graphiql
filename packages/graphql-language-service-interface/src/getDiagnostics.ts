@@ -1,5 +1,5 @@
 /**
- *  Copyright (c) 2019 GraphQL Contributors
+ *  Copyright (c) 2020 GraphQL Contributors
  *  All rights reserved.
  *
  *  This source code is licensed under the license found in the
@@ -10,14 +10,15 @@
 import {
   ASTNode,
   DocumentNode,
+  FragmentDefinitionNode,
   GraphQLError,
   GraphQLSchema,
   Location,
   SourceLocation,
   ValidationRule,
+  print,
 } from 'graphql';
 
-import invariant from 'assert';
 import { findDeprecatedUsages, parse } from 'graphql';
 
 import { CharacterStream, onlineParser } from 'graphql-language-service-parser';
@@ -29,6 +30,8 @@ import {
 } from 'graphql-language-service-utils';
 
 import { DiagnosticSeverity, Diagnostic } from 'vscode-languageserver-types';
+
+import { IRange } from 'graphql-language-service-types';
 
 // this doesn't work without the 'as', kinda goofy
 
@@ -50,13 +53,33 @@ export const DIAGNOSTIC_SEVERITY = {
   [SEVERITY.Hint]: 4 as DiagnosticSeverity,
 };
 
+const invariant = (condition: any, message: string) => {
+  if (!condition) {
+    throw new Error(message);
+  }
+};
+
 export function getDiagnostics(
   query: string,
   schema: GraphQLSchema | null | undefined = null,
   customRules?: Array<ValidationRule>,
   isRelayCompatMode?: boolean,
+  externalFragments?: FragmentDefinitionNode[] | string,
 ): Array<Diagnostic> {
   let ast = null;
+  if (externalFragments) {
+    if (typeof externalFragments === 'string') {
+      query += '\n\n' + externalFragments;
+    } else {
+      query +=
+        '\n\n' +
+        externalFragments.reduce((agg, node) => {
+          agg += print(node) + '\n\n';
+          return agg;
+        }, '');
+    }
+  }
+
   try {
     ast = parse(query);
   } catch (error) {
@@ -90,20 +113,17 @@ export function validateQuery(
     error => annotations(error, DIAGNOSTIC_SEVERITY.Error, 'Validation'),
   );
 
-  // Note: findDeprecatedUsages was added in graphql@0.9.0, but we want to
-  // support older versions of graphql-js.
-  const deprecationWarningAnnotations = !findDeprecatedUsages
-    ? []
-    : mapCat(findDeprecatedUsages(schema, ast), error =>
-        annotations(error, DIAGNOSTIC_SEVERITY.Warning, 'Deprecation'),
-      );
-
+  // TODO: detect if > graphql@15.2.0, and use the new rule for this.
+  const deprecationWarningAnnotations = mapCat(
+    findDeprecatedUsages(schema, ast),
+    error => annotations(error, DIAGNOSTIC_SEVERITY.Warning, 'Deprecation'),
+  );
   return validationErrorAnnotations.concat(deprecationWarningAnnotations);
 }
 
 // General utility for map-cating (aka flat-mapping).
 function mapCat<T>(
-  array: Array<T>,
+  array: ReadonlyArray<T>,
   mapper: (item: T) => Array<any>,
 ): Array<any> {
   return Array.prototype.concat.apply([], array.map(mapper));
@@ -150,7 +170,7 @@ function annotations(
   return highlightedNodes;
 }
 
-export function getRange(location: SourceLocation, queryText: string): Range {
+export function getRange(location: SourceLocation, queryText: string): IRange {
   const parser = onlineParser();
   const state = parser.startState();
   const lines = queryText.split('\n');
