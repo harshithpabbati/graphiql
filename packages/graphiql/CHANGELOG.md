@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.4.3
+
+### Patch Changes
+
+- [`04fad79c`](https://github.com/graphql/graphiql/commit/04fad79c094318d4b4c9e0250c5cff55d9fc5116) [#1889](https://github.com/graphql/graphiql/pull/1889) Thanks [@henryqdineen](https://github.com/henryqdineen)! - feat: export ToolbarSelectOption and ToolbarMenuItem
+
 ## 1.4.2
 
 ### Patch Changes
